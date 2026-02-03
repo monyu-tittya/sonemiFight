@@ -1,89 +1,216 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>頑張れ‼️😤ちゃん</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-            @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
-            body { font-family: 'DotGothic16', sans-serif; background-color: #1a1a1a; overflow: hidden; touch-action: none; height: 100dvh; width: 100vw; margin: 0; }
-            .text-shadow { text-shadow: 2px 2px 0px #000; }
-            .message-box { background: rgba(0, 0, 0, 0.7); border: 4px solid #f472b6; border-radius: 15px; color: white; }
-            @keyframes zoomIn { 0% { transform: scale(0.1) translate(-50%, 0); opacity: 0; } 20% { opacity: 1; } 100% { transform: scale(3.5) translate(-50%, 0); opacity: 1; } }
-            .enemy-approach { animation: zoomIn var(--speed) linear forwards; transform-origin: center bottom; }
-            .punch-action { animation: punchAnim 0.1s ease-out; }
-            @keyframes punchAnim { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.5); } }
-            .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97); }
-            @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20% { transform: translate3d(4px, 0, 0); } }
-            #target-guide { border: 6px dashed rgba(244, 114, 182, 0.4); width: 160px; height:160px;  position: absolute; border: 4px dashed rgba(244, 114, 182, 0.5); border-radius: 50%; width: 140px; height: 140px; top: 40%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 40; }
-            #target-guide.active { border-color: #ff0000; border-style: solid; box-shadow: 0 0 30px #ff0000; background: rgba(255, 0, 0, 0.1); }
-        </style>
-    </head>
-    <body class="flex flex-col">
-        <div id="game-container" class="relative w-full h-full max-w-[500px] mx-auto bg-gray-900 overflow-hidden">
-            <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-40 transition-all duration-1000"></div>
+        @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
 
-            <div id="action-scene" class="absolute inset-0 z-10 hidden">
-                <div class="absolute top-10 right-4 w-40 h-8 bg-gray-700 border-2 border-white z-50 rounded-full overflow-hidden">
-                    <div id="hp-bar" class="h-full bg-gradient-to-r from-pink-500 to-red-600 transition-all duration-200 w-full"></div>
-                </div>
-                <div id="hp-text" class="absolute top-11 right-20 z-50 text-white font-bold text-shadow text-sm pointer-events-none">HP</div>
+        body {
+            font-family: 'DotGothic16', sans-serif;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            touch-action: none;
+            height: 100dvh;
+            width: 100vw;
+            margin: 0;
+        }
 
-                <div class="absolute top-20 right-4 z-50 text-white text-xl font-bold text-shadow text-right">
-                    SCORE: <span id="score-val" class="text-yellow-400">0</span>
-                </div>
+        .text-shadow {
+            text-shadow: 2px 2px 0px #000;
+        }
 
-                <div id="target-guide"></div>
-                <div id="enemy-container" class="absolute inset-0 top-0 pointer-events-none overflow-visible"></div>
-                <div class="absolute top-10 left-4 z-50 text-2xl text-white font-bold text-shadow">残り: <span id="enemy-count" class="text-pink-400">0</span></div>
+        .message-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 4px solid #f472b6;
+            border-radius: 15px;
+            color: white;
+        }
 
-                <div id="punch-zone" class="absolute bottom-0 w-full h-[50vh] z-30 flex flex-col items-center justify-end pb-12 cursor-pointer active:bg-white/5 transition-colors" onmousedown="tryPunch(event)" ontouchstart="tryPunch(event)">
-                    <div id="player-fist" class="text-8xl transition-transform filter drop-shadow-lg">👊</div>
-                </div>
+        @keyframes zoomIn {
+            0% {
+                transform: scale(0.1) translate(-50%, 0);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(3.5) translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        .enemy-approach {
+            animation: zoomIn var(--speed) linear forwards;
+            transform-origin: center bottom;
+        }
+
+        .punch-action {
+            animation: punchAnim 0.1s ease-out;
+        }
+
+        @keyframes punchAnim {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.5);
+            }
+        }
+
+        .shake {
+            animation: shake 0.3s cubic-bezier(.36, .07, .19, .97);
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-2px, 0, 0);
+            }
+
+            20% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        #target-guide:not(.active) {
+            border-color: rgba(244, 114, 182, 0.4);
+        }
+
+        /* 新しいガイドアニメーション用 */
+        .aim-guide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 45;
+            animation: guideAnim var(--speed) linear forwards;
+        }
+
+        @keyframes guideAnim {
+            0% {
+                opacity: 1;
+                border: 4px solid red;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+
+            80% {
+                opacity: 1;
+                border: 6px solid red;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+
+            /* ここがパーフェクト（手前） */
+            81% {
+                border: 6px dashed red;
+                opacity: 0.8;
+            }
+
+            100% {
+                border: 6px dashed red;
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.3);
+            }
+        }
+
+        .fist-cooldown {
+            filter: grayscale(1) opacity(0.5);
+        }
+    </style>
+</head>
+
+<body class="flex flex-col">
+    <div id="game-container" class="relative w-full h-full max-w-[500px] mx-auto bg-gray-900 overflow-hidden">
+        <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-40 transition-all duration-1000"></div>
+
+        <div id="action-scene" class="absolute inset-0 z-10 hidden">
+            <div
+                class="absolute top-10 right-4 w-40 h-8 bg-gray-700 border-2 border-white z-50 rounded-full overflow-hidden">
+                <div id="hp-bar"
+                    class="h-full bg-gradient-to-r from-pink-500 to-red-600 transition-all duration-200 w-full"></div>
+            </div>
+            <div id="hp-text"
+                class="absolute top-11 right-20 z-50 text-white font-bold text-shadow text-sm pointer-events-none">HP
             </div>
 
-            <div id="novel-scene" class="absolute inset-0 z-20 hidden flex flex-col justify-end p-4 pb-12">
-                <div id="novel-chars" class="flex justify-center items-end mb-4 h-64"></div>
-                <div id="name-tag" class="w-fit self-start px-4 py-1 bg-pink-600 text-white rounded-t-lg font-bold"></div>
-                <div class="message-box p-4 h-32 text-lg cursor-pointer overflow-y-auto" onclick="nextNovelStep()">
-                    <span id="message-text"></span>
-                    <div class="text-right text-pink-400 animate-bounce">▼</div>
-                </div>
+            <div class="absolute top-20 right-4 z-50 text-white text-xl font-bold text-shadow text-right">
+                SCORE: <span id="score-val" class="text-yellow-400">0</span>
             </div>
 
-            <div id="result-screen" class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center z-[110] hidden p-6 text-center">
-                <h2 class="text-4xl font-bold text-pink-600 mb-2">✨ 狩り終了 ✨</h2>
-                <div class="text-2xl mb-2 text-gray-800">最終スコア</div>
-                <div id="final-score" class="text-7xl font-bold text-pink-600 mb-10 text-shadow">0</div>
-                <button onclick="location.reload()" class="px-10 py-4 bg-pink-600 text-white rounded-full text-2xl font-bold">もう一度狩る</button>
-            </div>
+            <div id="target-guide"></div>
+            <div id="enemy-container" class="absolute inset-0 top-0 pointer-events-none overflow-visible"></div>
+            <div class="absolute top-10 left-4 z-50 text-2xl text-white font-bold text-shadow">残り: <span
+                    id="enemy-count" class="text-pink-400">0</span></div>
 
-            <div id="title-screen" class="absolute inset-0 bg-pink-600 flex flex-col items-center justify-center z-50 p-4">
-                <h1 class="text-5xl font-bold text-white text-shadow text-center mb-4 leading-snug">頑張れ‼️<br>😤ちゃん</h1>
-                <button onclick="gameStart()" class="px-12 py-5 bg-white text-pink-600 rounded-full text-3xl font-bold shadow-xl">狩りを始める</button>
-            </div>
-
-            <div id="game-over" class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-[100] hidden p-6 text-center">
-                <h2 class="text-6xl font-bold text-red-600 mb-6">無念...</h2>
-                <button onclick="location.reload()" class="px-10 py-4 bg-red-600 text-white rounded-full text-2xl font-bold">リベンジする</button>
+            <div id="punch-zone"
+                class="absolute bottom-0 w-full h-[50vh] z-30 flex flex-col items-center justify-end pb-12 cursor-pointer active:bg-white/5 transition-colors"
+                onmousedown="tryPunch(event)" ontouchstart="tryPunch(event)">
+                <div id="player-fist" class="text-8xl transition-transform filter drop-shadow-lg">👊</div>
             </div>
         </div>
 
-        <script>
-            const CHARS = {
-                sonemi: { name: "😤", emoji: "😤", color: "bg-pink-600" },
-                boy: { name: "👦", emoji: "👦", color: "bg-blue-500" },
-                akira: { name: "🔪", emoji: "🔪", color: "bg-gray-500" },
-                clown: { name: "🤡", emoji: "🤡", color: "bg-red-500" },
-                smiley: { name: "😌", emoji: "😌", color: "bg-yellow-500" },
-                hole: { name: "🪏", emoji: "🪏", color: "bg-gray-800" },
-                devil: { name: "👿", emoji: "👿", color: "bg-purple-600" },
-                camera: { name: "📷️", emoji: "📷", color: "bg-black" }
-            };
+        <div id="novel-scene" class="absolute inset-0 z-20 hidden flex flex-col justify-end p-4 pb-12">
+            <div id="novel-chars" class="flex justify-center items-end mb-4 h-64"></div>
+            <div id="name-tag" class="w-fit self-start px-4 py-1 bg-pink-600 text-white rounded-t-lg font-bold"></div>
+            <div class="message-box p-4 h-32 text-lg cursor-pointer overflow-y-auto" onclick="nextNovelStep()">
+                <span id="message-text"></span>
+                <div class="text-right text-pink-400 animate-bounce">▼</div>
+            </div>
+        </div>
 
-            const SCENARIOS = [
-                { type: 'novel', bg: 'images/back.jpg', steps: [
+        <div id="result-screen"
+            class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center z-[110] hidden p-6 text-center">
+            <h2 class="text-4xl font-bold text-pink-600 mb-2">✨ 狩り終了 ✨</h2>
+            <div class="text-2xl mb-2 text-gray-800">最終スコア</div>
+            <div id="final-score" class="text-7xl font-bold text-pink-600 mb-10 text-shadow">0</div>
+            <button onclick="location.reload()"
+                class="px-10 py-4 bg-pink-600 text-white rounded-full text-2xl font-bold">もう一度狩る</button>
+        </div>
+
+        <div id="title-screen" class="absolute inset-0 bg-pink-600 flex flex-col items-center justify-center z-50 p-4">
+            <h1 class="text-5xl font-bold text-white text-shadow text-center mb-4 leading-snug">頑張れ‼️<br>😤ちゃん</h1>
+            <button onclick="gameStart()"
+                class="px-12 py-5 bg-white text-pink-600 rounded-full text-3xl font-bold shadow-xl">狩りを始める</button>
+        </div>
+
+        <div id="game-over"
+            class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-[100] hidden p-6 text-center">
+            <h2 class="text-6xl font-bold text-red-600 mb-6">無念...</h2>
+            <button onclick="location.reload()"
+                class="px-10 py-4 bg-red-600 text-white rounded-full text-2xl font-bold">リベンジする</button>
+        </div>
+    </div>
+
+    <script>
+        const CHARS = {
+            sonemi: { name: "😤", emoji: "😤", color: "bg-pink-600" },
+            boy: { name: "👦", emoji: "👦", color: "bg-blue-500" },
+            akira: { name: "🔪", emoji: "🔪", color: "bg-gray-500" },
+            clown: { name: "🤡", emoji: "🤡", color: "bg-red-500" },
+            smiley: { name: "😌", emoji: "😌", color: "bg-yellow-500" },
+            hole: { name: "🪏", emoji: "🪏", color: "bg-gray-800" },
+            devil: { name: "👿", emoji: "👿", color: "bg-purple-600" },
+            camera: { name: "📷️", emoji: "📷", color: "bg-black" }
+        };
+
+        const SCENARIOS = [
+            {
+                type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: null, text: "（今日も今日とてイライラしている😤ちゃん）" },
                     { char: 'sonemi', text: "はあ…ストレスの限界だわ…何か憂さ晴らしになること…" },
                     { char: null, text: "（運悪く通りかかる👦）" },
@@ -94,9 +221,11 @@
                     { char: 'sonemi', text: "はぁ❓️誰よあんた‼️私のオモチャに指一本触れてみなさい。その鼻、へし折ってやるわ‼️" },
                     { char: 'akira', text: "お前こそだれだよ⁉️まあいい、受けて立ってやる‼️‼️‼️" },
                     { char: 'boy', text: "…俺は😤ちゃんのオモチャじゃないよ⁉️" }
-                ]},
-                { type: 'action', enemyEmoji: "🔪", count: 20, speedBase: 1500 },
-                { type: 'novel', bg: 'images/back.jpg', steps: [
+                ]
+            },
+            { type: 'action', enemyEmoji: "🔪", count: 20, speedBase: 1500 },
+            {
+                type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: 'akira', text: "ぐああっ‼️…なかなかやるじゃないか…今日はこの辺で勘弁してやる‼️" },
                     { char: null, text: "（🔪は逃げていった…）" },
                     { char: 'sonemi', text: "雑魚が。口ほどにもないわね。…さて👦、続きを…👊" },
@@ -104,9 +233,11 @@
                     { char: null, text: "（殺人🤡が現れた‼️‼️‼️）" },
                     { char: 'boy', text: "ぎょえぴ〜‼️" },
                     { char: 'sonemi', text: "今度は何⁉️…アンタみたいな変質者ピエロは、地獄で玉乗りでもしてなさい‼️" }
-                ]},
-                { type: 'action', enemyEmoji: "🤡", count: 35, speedBase: 1200 },
-                { type: 'novel', bg: 'images/back.jpg', steps: [
+                ]
+            },
+            { type: 'action', enemyEmoji: "🤡", count: 35, speedBase: 1200 },
+            {
+                type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: null, text: "（ボコボコになった🤡は走って逃げていった…）" },
                     { char: 'boy', text: "ヒェッ…怖いよぉ…（😤ちゃんが）" },
                     { char: 'sonemi', text: "ふん、こいつも雑魚ね。…さて👦、続きを…👊" },
@@ -114,18 +245,22 @@
                     { char: 'smiley', text: "美味しそうなお肉を見つけました。いただきます😌" },
                     { char: 'boy', text: "え❓️もしかしなくても…俺のこと⁉️…そんなに美味しそうかな…❓️" },
                     { char: 'sonemi', text: "何馬鹿なこと言ってんの⁉️…はあ、私がやるわ。アンタは下がってなさい‼️" }
-                ]},
-                { type: 'action', enemyEmoji: "😌", count: 40, speedBase: 1000 },
-                { type: 'novel', bg: 'images/back.jpg', steps: [
+                ]
+            },
+            { type: 'action', enemyEmoji: "😌", count: 40, speedBase: 1000 },
+            {
+                type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: 'smiley', text: "くっ…" },
                     { char: null, text: "（命の危険を感じたサイコパスは逃走した）" },
                     { char: 'sonemi', text: "偏食治して出直してきな‼️…まったく、なんでこう次から次へと…" },
                     { char: 'hole', text: "…………（無言で🪏を構える男）" },
                     { char: 'boy', text: "ぎょえぴ～‼️‼️殺人鬼だ~‼️助けて～‼️‼️" },
                     { char: 'sonemi', text: "あんたのストーカー何人いるの⁉️" }
-                ]},
-                { type: 'action', enemyEmoji: "🪏", count: 60, speedBase: 800 },
-                { type: 'novel', bg: 'images/back.jpg', steps: [
+                ]
+            },
+            { type: 'action', enemyEmoji: "🪏", count: 60, speedBase: 800 },
+            {
+                type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: null, text: "（殺人鬼は穴の中へ帰っていった）" },
                     { char: 'sonemi', text: "はぁ…はぁ…これで全員❓️さすがに疲れたわ…" },
                     { char: 'sonemi', text: "ふう、やっと二人きりね。覚悟しなさい👊" },
@@ -135,9 +270,11 @@
                     { char: 'sonemi', text: "また盗撮⁉️肖像権の侵害で訴えるわよ‼️" },
                     { char: 'devil', text: "カカカッ‼️モザイクかけますのでご心配なく‼️" },
                     { char: 'sonemi', text: "…邪魔するなら容赦しないわよ👊" }
-                ]},
-                { type: 'action', enemyEmoji: "👿", count: 100, speedBase: 600 },
-                { type: 'novel', bg: 'images/back.jpg', steps: [
+                ]
+            },
+            { type: 'action', enemyEmoji: "👿", count: 100, speedBase: 600 },
+            {
+                type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: 'sonemi', text: "…終わった…❓️私の勝ち…よね❓️" },
                     { char: 'devil', text: "なかなかやりますねえ…‼️📷️ちゃん撮れ高どうです❓️" },
                     { char: 'camera', text: "じー‼️👍️（最高だ‼️）" },
@@ -149,302 +286,318 @@
                     { char: 'sonemi', text: "うそでしょ…行っちゃった…。" },
                     { char: 'sonemi', text: "……私のストレス、どこにぶつければいいのよおおおおお‼️‼️‼️👊💥" },
                     { char: null, text: "【THE END】" }
-                ]}
-            ];
-
-            let hp = 100;
-            let score = 0;
-            let combo = 0;
-            let comboTimer = null;
-            let currentIdx = 0;
-            let novelStep = 0;
-            let gameState = 'title';
-            let activeEnemies = [];
-            let enemiesLeft = 0;
-            let spawnTimer = null;
-
-            function gameStart() {
-                document.getElementById('title-screen').style.display = 'none';
-                loadScenario(0);
+                ]
             }
+        ];
 
-            function loadScenario(idx) {
-                currentIdx = idx;
-                if (idx >= SCENARIOS.length) {
-                    showResult();
-                    return;
-                }
-                const s = SCENARIOS[idx];
-                if (s.bg) document.getElementById('bg-layer').style.backgroundImage = `url('${s.bg}')`;
+        let hp = 100;
+        let score = 0;
+        let combo = 0;
+        let comboTimer = null;
+        let currentIdx = 0;
+        let novelStep = 0;
+        let gameState = 'title';
+        let activeEnemies = [];
+        let enemiesLeft = 0;
+        let spawnTimer = null;
+        let lastPunchTime = 0;
+        const PUNCH_COOLDOWN = 400; // ミス時のクールダウン（ミリ秒）
 
-                if (s.type === 'novel') {
-                    gameState = 'novel';
-                    novelStep = 0;
-                    document.getElementById('novel-scene').classList.remove('hidden');
-                    document.getElementById('action-scene').classList.add('hidden');
-                    renderNovel();
-                } else {
-                    startAction(s);
-                }
+        function gameStart() {
+            document.getElementById('title-screen').style.display = 'none';
+            loadScenario(0);
+        }
+
+        function loadScenario(idx) {
+            currentIdx = idx;
+            if (idx >= SCENARIOS.length) {
+                showResult();
+                return;
             }
+            const s = SCENARIOS[idx];
+            if (s.bg) document.getElementById('bg-layer').style.backgroundImage = `url('${s.bg}')`;
 
-            function renderNovel() {
-                const step = SCENARIOS[currentIdx].steps[novelStep];
-                const charContainer = document.getElementById('novel-chars');
-                charContainer.innerHTML = '';
-                if (step.char) {
-                    const data = CHARS[step.char];
-                    document.getElementById('name-tag').innerText = data.name;
-                    document.getElementById('name-tag').className = `w-fit self-start px-4 py-1 text-white rounded-t-lg font-bold ${data.color}`;
-                    document.getElementById('name-tag').style.display = 'inline-block';
-                    const el = document.createElement('div');
-                    el.innerText = data.emoji; el.className = "text-9xl animate-bounce";
-                    charContainer.appendChild(el);
-                } else {
-                    document.getElementById('name-tag').style.display = 'none';
-                }
-                document.getElementById('message-text').innerText = step.text;
-            }
-
-            function nextNovelStep() {
-                if (gameState !== 'novel') return;
-                novelStep++;
-                if (novelStep < SCENARIOS[currentIdx].steps.length) renderNovel();
-                else loadScenario(currentIdx + 1);
-            }
-
-            function startAction(config) {
-                gameState = 'action';
-                enemiesLeft = config.count;
-                activeEnemies = [];
-                document.getElementById('enemy-count').innerText = enemiesLeft;
-                document.getElementById('novel-scene').classList.add('hidden');
-                document.getElementById('action-scene').classList.remove('hidden');
-                let spawned = 0;
-                const spawnLoop = () => {
-                    if (gameState !== 'action' || spawned >= config.count) return;
-                    spawnEnemy(config.enemyEmoji, config.speedBase);
-                    spawned++;
-                    const nextInterval = config.speedBase * (0.2 + Math.random() * 0.4);
-                    spawnTimer = setTimeout(spawnLoop, nextInterval);
-                };
-                spawnLoop();
-                requestAnimationFrame(updateLoop);
-            }
-
-            function spawnEnemy(emoji, speed) {
-                const el = document.createElement('div');
-                el.innerText = emoji;
-                el.className = "absolute text-7xl enemy-approach";
-                const randomX = 50 + (Math.random() * 30 - 15);
-                el.style.setProperty('--speed', speed + 'ms');
-                el.style.left = randomX + "%";
-                el.style.top = "40%";
-                document.getElementById('enemy-container').appendChild(el);
-                const enemy = { el, start: Date.now(), speed, hit: false };
-                activeEnemies.push(enemy);
-
-                setTimeout(() => {
-                    if (!enemy.hit && gameState === 'action') {
-                        takeDamage(10);
-                        score = Math.max(0, score - 50);
-                        updateScoreDisplay();
-                        enemiesLeft--;
-                        document.getElementById('enemy-count').innerText = enemiesLeft;
-                        el.remove();
-                        checkClear();
-                    }
-                    activeEnemies = activeEnemies.filter(e => e !== enemy);
-                }, speed);
-            }
-
-            function updateLoop() {
-                if (gameState !== 'action') return;
-                const now = Date.now();
-                let anyCritical = false;
-                activeEnemies.forEach(e => {
-                    const progress = (now - e.start) / e.speed;
-                    if (progress > 0.65 && progress < 0.95 && !e.hit) anyCritical = true;
-                });
-                document.getElementById('target-guide').className = anyCritical ? 'active' : '';
-                requestAnimationFrame(updateLoop);
-            }
-
-            function tryPunch(e) {
-                if (e) e.preventDefault();
-                if (gameState !== 'action') return;
-
-                const fist = document.getElementById('player-fist');
-                fist.classList.remove('punch-action'); void fist.offsetWidth; fist.classList.add('punch-action');
-
-                const now = Date.now();
-                let hitCount = 0;
-                let resetCombo = true;
-                activeEnemies.forEach(e => {
-                    const progress = (now - e.start) / e.speed;
-                    if (progress > 0.6 && progress < 0.98 && !e.hit) {
-                        e.hit = true;
-                        let rating = "";
-                        let pointMult = 1;
-
-                        if (progress >= 0.80 && progress <= 0.98) {
-                            rating = "✨PERFECT✨";
-                            pointMult = 2;
-                            hp = Math.min(100, hp + 2);
-                            resetCombo = false;
-                        } else if (progress >= 0.65 && progress < 0.80) {
-                            rating = "👍GOOD";
-                            pointMult = 1;
-                            hp = Math.min(100, hp + 1);
-                            resetCombo = false;
-                        } else {
-                            rating = "💦BAD";
-                            pointMult = 0.5;
-                        }
-
-                        e.el.remove();
-                        enemiesLeft--;
-                        document.getElementById('enemy-count').innerText = enemiesLeft;
-                        hitCount++;
-
-                        let comboBonus = Math.floor(combo / 10) * 50;
-                        score += Math.floor((100 + comboBonus) * pointMult);
-                        showEffect(rating, e.el.style.left);
-                    }
-                });
-
-                if (hitCount > 0) {
-                    if (resetCombo) {
-                        combo = 0;
-                    } else {
-                        combo += hitCount;
-                    }
-                    updateScoreDisplay();
-                    showComboEffect();
-
-                    if (comboTimer) clearTimeout(comboTimer);
-                    comboTimer = setTimeout(() => { combo = 0; hideComboEffect(); }, 1500);
-
-                    updateHpBar();
-                    checkClear();
-                } else {
-                    combo = 0;
-                    hideComboEffect();
-                }
-            }
-
-            function showEffect(txt, leftPos) {
-                const eff = document.createElement('div');
-                eff.innerText = txt;
-
-                let textColor = "text-white";
-                if (txt.includes("PERFECT")) {
-                    textColor = "text-yellow-400 text-6xl font-black";
-                } else if (txt.includes("GOOD")) {
-                    textColor = "text-blue-400 text-4xl font-bold";
-                } else if (txt.includes("BAD")) {
-                    textColor = "text-gray-500 text-3xl font-bold";
-                } else {
-                    textColor = "text-pink-500 text-8xl";
-                }
-
-                eff.className = `absolute z-50 pointer-events-none text-shadow animate-bounce ${textColor}`;
-                eff.style.left = leftPos || "50%";
-                eff.style.top = "35%";
-                eff.style.transform = "translate(-50%, -50%)";
-
-                document.getElementById('action-scene').appendChild(eff);
-
-                setTimeout(() => {
-                    eff.style.transition = "opacity 0.2s";
-                    eff.style.opacity = "0";
-                    setTimeout(() => eff.remove(), 200);
-                }, 500);
-            }
-            function showComboEffect() {
-                let comboEl = document.getElementById('combo-display');
-                if (!comboEl) {
-                    comboEl = document.createElement('div');
-                    comboEl.id = 'combo-display';
-                    comboEl.className = "absolute top-1/2 left-4 z-50 text-5xl font-black text-yellow-400 text-shadow italic animate-pulse";
-                    document.getElementById('action-scene').appendChild(comboEl);
-                }
-                if (combo > 1) {
-                    comboEl.innerText = combo + " COMBO!!";
-                }
-            }
-            function hideComboEffect() {
-                const comboEl = document.getElementById('combo-display');
-                if (comboEl) comboEl.innerText = "";
-            }
-
-            function updateScoreDisplay() {
-                const el = document.getElementById('score-val');
-                if(el) el.innerText = score;
-            }
-
-            function showResult() {
-                gameState = 'result';
+            if (s.type === 'novel') {
+                gameState = 'novel';
+                novelStep = 0;
+                document.getElementById('novel-scene').classList.remove('hidden');
                 document.getElementById('action-scene').classList.add('hidden');
-                document.getElementById('result-screen').classList.remove('hidden');
-                document.getElementById('final-score').innerText = score;
+                renderNovel();
+            } else {
+                startAction(s);
+            }
+        }
 
-                // スコアに応じてメッセージを変えるよ！
-                let msg = "";
-                if (score >= 50000) {
-                    msg = "😤「あんた、プロのサンドバッグ職人ね！惚れ惚れするわ👊✨」";
-                } else if (score >= 30000) {
-                    msg = "「ふん、まあまあね。少しはスッキリしたわ😤」";
-                } else if (score >= 10000) {
-                    msg = "😤「まだまだ修行が足りないわね！出直してきなさい！👊」";
+        function renderNovel() {
+            const step = SCENARIOS[currentIdx].steps[novelStep];
+            const charContainer = document.getElementById('novel-chars');
+            charContainer.innerHTML = '';
+            if (step.char) {
+                const data = CHARS[step.char];
+                document.getElementById('name-tag').innerText = data.name;
+                document.getElementById('name-tag').className = `w-fit self-start px-4 py-1 text-white rounded-t-lg font-bold ${data.color}`;
+                document.getElementById('name-tag').style.display = 'inline-block';
+                const el = document.createElement('div');
+                el.innerText = data.emoji; el.className = "text-9xl animate-bounce";
+                charContainer.appendChild(el);
+            } else {
+                document.getElementById('name-tag').style.display = 'none';
+            }
+            document.getElementById('message-text').innerText = step.text;
+        }
+
+        function nextNovelStep() {
+            if (gameState !== 'novel') return;
+            novelStep++;
+            if (novelStep < SCENARIOS[currentIdx].steps.length) renderNovel();
+            else loadScenario(currentIdx + 1);
+        }
+
+        function startAction(config) {
+            gameState = 'action';
+            enemiesLeft = config.count;
+            activeEnemies = [];
+            document.getElementById('enemy-count').innerText = enemiesLeft;
+            document.getElementById('novel-scene').classList.add('hidden');
+            document.getElementById('action-scene').classList.remove('hidden');
+            let spawned = 0;
+            const spawnLoop = () => {
+                if (gameState !== 'action' || spawned >= config.count) return;
+                spawnEnemy(config.enemyEmoji, config.speedBase);
+                spawned++;
+                const nextInterval = config.speedBase * (0.2 + Math.random() * 0.4);
+                spawnTimer = setTimeout(spawnLoop, nextInterval);
+            };
+            spawnLoop();
+            requestAnimationFrame(updateLoop);
+        }
+
+        function spawnEnemy(emoji, speed) {
+            const el = document.createElement('div');
+            el.innerText = emoji;
+            el.className = "absolute text-7xl enemy-approach";
+            const randomX = 50 + (Math.random() * 30 - 15);
+            el.style.setProperty('--speed', speed + 'ms');
+            el.style.left = randomX + "%";
+            el.style.top = "40%";
+
+            // ガイド用のリングを追加
+            const guide = document.createElement('div');
+            guide.className = "aim-guide";
+            el.appendChild(guide);
+
+            document.getElementById('enemy-container').appendChild(el);
+            const enemy = { el, start: Date.now(), speed, hit: false };
+            activeEnemies.push(enemy);
+
+            setTimeout(() => {
+                if (!enemy.hit && gameState === 'action') {
+                    takeDamage(10);
+                    score = Math.max(0, score - 50);
+                    updateScoreDisplay();
+                    enemiesLeft--;
+                    document.getElementById('enemy-count').innerText = enemiesLeft;
+                    el.remove();
+                    checkClear();
+                }
+                activeEnemies = activeEnemies.filter(e => e !== enemy);
+            }, speed);
+        }
+
+        function updateLoop() {
+            if (gameState !== 'action') return;
+            // ガイドのactive切り替えは廃止しCSSアニメーションに任せる
+            requestAnimationFrame(updateLoop);
+        }
+
+        function tryPunch(e) {
+            if (e) e.preventDefault();
+            if (gameState !== 'action') return;
+
+            const now = Date.now();
+            if (now - lastPunchTime < PUNCH_COOLDOWN) return; // クールダウン中
+
+            const fist = document.getElementById('player-fist');
+            fist.classList.remove('punch-action'); void fist.offsetWidth; fist.classList.add('punch-action');
+
+            let hitCount = 0;
+            let resetCombo = true;
+            activeEnemies.forEach(e => {
+                const progress = (now - e.start) / e.speed;
+                if (progress > 0.6 && progress < 0.98 && !e.hit) {
+                    e.hit = true;
+                    let rating = "";
+                    let pointMult = 1;
+
+                    if (progress >= 0.80 && progress <= 0.98) {
+                        rating = "✨PERFECT✨";
+                        pointMult = 2;
+                        hp = Math.min(100, hp + 2);
+                        resetCombo = false;
+                    } else if (progress >= 0.65 && progress < 0.80) {
+                        rating = "👍GOOD";
+                        pointMult = 1;
+                        hp = Math.min(100, hp + 1);
+                        resetCombo = false;
+                    } else {
+                        rating = "💦BAD";
+                        pointMult = 0.5;
+                    }
+
+                    e.el.remove();
+                    enemiesLeft--;
+                    document.getElementById('enemy-count').innerText = enemiesLeft;
+                    hitCount++;
+
+                    let comboBonus = Math.floor(combo / 10) * 50;
+                    score += Math.floor((100 + comboBonus) * pointMult);
+                    showEffect(rating, e.el.style.left);
+                }
+            });
+
+            if (hitCount > 0) {
+                if (resetCombo) {
+                    combo = 0;
                 } else {
-                    msg = "😤「ちょっと！全然当たってないじゃない！私のストレス倍増よ！💢」";
+                    combo += hitCount;
                 }
+                updateScoreDisplay();
+                showComboEffect();
 
-                // メッセージを表示するための要素を作るか、既存の場所に入れるよ
-                let msgEl = document.getElementById('result-msg');
-                if (!msgEl) {
-                    msgEl = document.createElement('p');
-                    msgEl.id = 'result-msg';
-                    msgEl.className = "text-xl text-pink-500 font-bold mt-4 mb-6 px-4";
-                    const scoreEl = document.getElementById('final-score');
-                    scoreEl.parentNode.insertBefore(msgEl, scoreEl.nextSibling);
-                }
-                msgEl.innerText = msg;
-            }
+                if (comboTimer) clearTimeout(comboTimer);
+                comboTimer = setTimeout(() => { combo = 0; hideComboEffect(); }, 1500);
 
-            function checkClear() {
-                if (gameState !== 'action') return;
-                if (enemiesLeft <= 0) {
-                    gameState = 'transition';
-                    if (spawnTimer) clearTimeout(spawnTimer);
-
-                    setTimeout(() => {
-                        loadScenario(currentIdx + 1);
-                    }, 1000);
-                }
-            }
-
-            function takeDamage(amt) {
-                hp -= amt;
+                updateHpBar();
+                checkClear();
+            } else {
+                // 空振り（ミス）
                 combo = 0;
                 hideComboEffect();
-                updateHpBar();
-                document.getElementById('game-container').classList.add('shake');
-                setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 300);
-                if (hp <= 0) {
-                    gameState = 'over';
-                    document.getElementById('game-over').classList.remove('hidden');
-                }
+                score = Math.max(0, score - 30);
+                updateScoreDisplay();
+                showEffect("❌MISS", "50%");
+
+                // クールダウン設定
+                lastPunchTime = now;
+                fist.classList.add('fist-cooldown');
+                setTimeout(() => fist.classList.remove('fist-cooldown'), PUNCH_COOLDOWN);
+            }
+        }
+
+        function showEffect(txt, leftPos) {
+            const eff = document.createElement('div');
+            eff.innerText = txt;
+
+            let textColor = "text-white";
+            if (txt.includes("PERFECT")) {
+                textColor = "text-yellow-400 text-6xl font-black";
+            } else if (txt.includes("GOOD")) {
+                textColor = "text-blue-400 text-4xl font-bold";
+            } else if (txt.includes("BAD")) {
+                textColor = "text-gray-500 text-3xl font-bold";
+            } else if (txt.includes("MISS")) {
+                textColor = "text-red-500 text-5xl font-bold";
+            } else {
+                textColor = "text-pink-500 text-8xl";
             }
 
-            function updateHpBar() {
-                const bar = document.getElementById('hp-bar');
-                bar.style.width = Math.max(0, hp) + "%";
+            eff.className = `absolute z-50 pointer-events-none text-shadow animate-bounce ${textColor}`;
+            eff.style.left = leftPos || "50%";
+            eff.style.top = "35%";
+            eff.style.transform = "translate(-50%, -50%)";
+
+            document.getElementById('action-scene').appendChild(eff);
+
+            setTimeout(() => {
+                eff.style.transition = "opacity 0.2s";
+                eff.style.opacity = "0";
+                setTimeout(() => eff.remove(), 200);
+            }, 500);
+        }
+        function showComboEffect() {
+            let comboEl = document.getElementById('combo-display');
+            if (!comboEl) {
+                comboEl = document.createElement('div');
+                comboEl.id = 'combo-display';
+                comboEl.className = "absolute top-1/2 left-4 z-50 text-5xl font-black text-yellow-400 text-shadow italic animate-pulse";
+                document.getElementById('action-scene').appendChild(comboEl);
+            }
+            if (combo > 1) {
+                comboEl.innerText = combo + " COMBO!!";
+            }
+        }
+        function hideComboEffect() {
+            const comboEl = document.getElementById('combo-display');
+            if (comboEl) comboEl.innerText = "";
+        }
+
+        function updateScoreDisplay() {
+            const el = document.getElementById('score-val');
+            if (el) el.innerText = score;
+        }
+
+        function showResult() {
+            gameState = 'result';
+            document.getElementById('action-scene').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+
+            // スコアに応じてメッセージを変えるよ！
+            let msg = "";
+            if (score >= 50000) {
+                msg = "😤「あんた、プロのサンドバッグ職人ね！惚れ惚れするわ👊✨」";
+            } else if (score >= 30000) {
+                msg = "「ふん、まあまあね。少しはスッキリしたわ😤」";
+            } else if (score >= 10000) {
+                msg = "😤「まだまだ修行が足りないわね！出直してきなさい！👊」";
+            } else {
+                msg = "😤「ちょっと！全然当たってないじゃない！私のストレス倍増よ！💢」";
             }
 
+            // メッセージを表示するための要素を作るか、既存の場所に入れるよ
+            let msgEl = document.getElementById('result-msg');
+            if (!msgEl) {
+                msgEl = document.createElement('p');
+                msgEl.id = 'result-msg';
+                msgEl.className = "text-xl text-pink-500 font-bold mt-4 mb-6 px-4";
+                const scoreEl = document.getElementById('final-score');
+                scoreEl.parentNode.insertBefore(msgEl, scoreEl.nextSibling);
+            }
+            msgEl.innerText = msg;
+        }
 
-        </script>
-    </body>
+        function checkClear() {
+            if (gameState !== 'action') return;
+            if (enemiesLeft <= 0) {
+                gameState = 'transition';
+                if (spawnTimer) clearTimeout(spawnTimer);
+
+                setTimeout(() => {
+                    loadScenario(currentIdx + 1);
+                }, 1000);
+            }
+        }
+
+        function takeDamage(amt) {
+            hp -= amt;
+            combo = 0;
+            hideComboEffect();
+            updateHpBar();
+            document.getElementById('game-container').classList.add('shake');
+            setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 300);
+            if (hp <= 0) {
+                gameState = 'over';
+                document.getElementById('game-over').classList.remove('hidden');
+            }
+        }
+
+        function updateHpBar() {
+            const bar = document.getElementById('hp-bar');
+            bar.style.width = Math.max(0, hp) + "%";
+        }
+
+
+    </script>
+</body>
 
 </html>
