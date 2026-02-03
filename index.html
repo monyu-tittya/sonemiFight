@@ -213,7 +213,7 @@
             clown: { name: "🤡", emoji: "🤡", color: "bg-red-500" },
             smiley: { name: "😌", emoji: "😌", color: "bg-yellow-500" },
             hole: { name: "🪏", emoji: "🪏", color: "bg-gray-800" },
-            devil: { name: "👿", emoji: "👿", color: "bg-purple-600" },
+            devil: { name: "😈", emoji: "😈", color: "bg-purple-600" },
             camera: { name: "📷️", emoji: "📷", color: "bg-black" }
         };
 
@@ -226,7 +226,7 @@
                     { char: 'boy', text: "あっ‼️😤ちゃん⁉️…何してるの❓️（怯）" },
                     { char: 'sonemi', text: "あら、いいところに来たわね。ちょっと顔貸しなさいよーーー👊" },
                     { char: 'boy', text: "な、なんで拳握ってるの⁉️怖いよ、誰か助け" },
-                    { char: 'akira', text: "くっくっく…やっと見つけたぞ👦‼️僕の『👿やっつけ大作戦』に協力しろ👦‼️" },
+                    { char: 'akira', text: "くっくっく…やっと見つけたぞ👦‼️僕の『😈やっつけ大作戦』に協力しろ👦‼️" },
                     { char: 'sonemi', text: "はぁ❓️誰よあんた‼️私のオモチャに指一本触れてみなさい。その鼻、へし折ってやるわ‼️" },
                     { char: 'akira', text: "お前こそだれだよ⁉️まあいい、受けて立ってやる‼️‼️‼️" },
                     { char: 'boy', text: "…俺は😤ちゃんのオモチャじゃないよ⁉️" }
@@ -281,7 +281,7 @@
                     { char: 'sonemi', text: "…邪魔するなら容赦しないわよ👊" }
                 ]
             },
-            { type: 'action', enemyEmoji: "👿", count: 100, speedBase: 600 },
+            { type: 'action', enemyEmoji: "😈", count: 100, speedBase: 600 },
             {
                 type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: 'sonemi', text: "…終わった…❓️私の勝ち…よね❓️" },
@@ -310,7 +310,9 @@
         let enemiesLeft = 0;
         let spawnTimer = null;
         let lastPunchTime = 0;
-        const PUNCH_COOLDOWN = 400; // ミス時のクールダウン（ミリ秒）
+        let punchCooldownDuration = 0;
+        const MISS_COOLDOWN = 200; // ミス時のクールダウン
+        const HIT_COOLDOWN = 300;  // ヒット時のクールダウン（連打/誤爆防止） 100 -> 300に延長
 
         function gameStart() {
             document.getElementById('title-screen').style.display = 'none';
@@ -374,7 +376,9 @@
                 if (gameState !== 'action' || spawned >= config.count) return;
                 spawnEnemy(config.enemyEmoji, config.speedBase);
                 spawned++;
-                const nextInterval = config.speedBase * (0.2 + Math.random() * 0.4);
+                // 敵の重なりを防ぐため、インターバルを広げる
+                // 最小値: speedBase * 0.5, 最大値: speedBase * 1.0
+                const nextInterval = config.speedBase * (0.6 + Math.random() * 0.6);
                 spawnTimer = setTimeout(spawnLoop, nextInterval);
             };
             spawnLoop();
@@ -424,7 +428,7 @@
             if (gameState !== 'action') return;
 
             const now = Date.now();
-            if (now - lastPunchTime < PUNCH_COOLDOWN) return; // クールダウン中
+            if (now - lastPunchTime < punchCooldownDuration) return; // クールダウン中
 
             const fist = document.getElementById('player-fist');
             fist.classList.remove('punch-action'); void fist.offsetWidth; fist.classList.add('punch-action');
@@ -467,17 +471,24 @@
             if (hitCount > 0) {
                 if (resetCombo) {
                     combo = 0;
+                    hideComboEffect();
                 } else {
                     combo += hitCount;
+                    showComboEffect();
                 }
                 updateScoreDisplay();
-                showComboEffect();
 
                 if (comboTimer) clearTimeout(comboTimer);
-                comboTimer = setTimeout(() => { combo = 0; hideComboEffect(); }, 1500);
+                if (!resetCombo) {
+                    comboTimer = setTimeout(() => { combo = 0; hideComboEffect(); }, 1500);
+                }
 
                 updateHpBar();
                 checkClear();
+
+                // ヒット後も短いクールダウンを入れて二重反応を防ぐ
+                lastPunchTime = now;
+                punchCooldownDuration = HIT_COOLDOWN;
             } else {
                 // 空振り（ミス）
                 combo = 0;
@@ -488,8 +499,9 @@
 
                 // クールダウン設定
                 lastPunchTime = now;
+                punchCooldownDuration = MISS_COOLDOWN;
                 fist.classList.add('fist-cooldown');
-                setTimeout(() => fist.classList.remove('fist-cooldown'), PUNCH_COOLDOWN);
+                setTimeout(() => fist.classList.remove('fist-cooldown'), MISS_COOLDOWN);
             }
         }
 
@@ -533,6 +545,12 @@
             }
             if (combo > 1) {
                 comboEl.innerText = combo + " COMBO!!";
+                // アニメーションをリセットして毎回強調する
+                comboEl.classList.remove('animate-pulse');
+                void comboEl.offsetWidth;
+                comboEl.classList.add('animate-pulse');
+                comboEl.style.transform = "scale(1.2)";
+                setTimeout(() => comboEl.style.transform = "scale(1)", 100);
             }
         }
         function hideComboEffect() {
