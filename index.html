@@ -232,7 +232,7 @@
                     { char: 'boy', text: "…俺は😤ちゃんのオモチャじゃないよ⁉️" }
                 ]
             },
-            { type: 'action', enemyEmoji: "🔪", count: 20, speedBase: 1500 },
+            { type: 'action', enemyEmoji: "🔪", count: 12, speedBase: 2000 },
             {
                 type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: 'akira', text: "ぐああっ‼️…なかなかやるじゃないか…今日はこの辺で勘弁してやる‼️" },
@@ -244,7 +244,7 @@
                     { char: 'sonemi', text: "今度は何⁉️…アンタみたいな変質者ピエロは、地獄で玉乗りでもしてなさい‼️" }
                 ]
             },
-            { type: 'action', enemyEmoji: "🤡", count: 35, speedBase: 1200 },
+            { type: 'action', enemyEmoji: "🤡", count: 18, speedBase: 1600 },
             {
                 type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: null, text: "（ボコボコになった🤡は走って逃げていった…）" },
@@ -256,7 +256,7 @@
                     { char: 'sonemi', text: "何馬鹿なこと言ってんの⁉️…はあ、私がやるわ。アンタは下がってなさい‼️" }
                 ]
             },
-            { type: 'action', enemyEmoji: "😌", count: 40, speedBase: 1000 },
+            { type: 'action', enemyEmoji: "😌", count: 20, speedBase: 1400 },
             {
                 type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: 'smiley', text: "くっ…" },
@@ -267,7 +267,7 @@
                     { char: 'sonemi', text: "あんたのストーカー何人いるの⁉️" }
                 ]
             },
-            { type: 'action', enemyEmoji: "🪏", count: 60, speedBase: 800 },
+            { type: 'action', enemyEmoji: "🪏", count: 30, speedBase: 1200 },
             {
                 type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: null, text: "（殺人鬼は穴の中へ帰っていった）" },
@@ -281,7 +281,7 @@
                     { char: 'sonemi', text: "…邪魔するなら容赦しないわよ👊" }
                 ]
             },
-            { type: 'action', enemyEmoji: "😈", count: 100, speedBase: 600 },
+            { type: 'action', enemyEmoji: "😈", count: 50, speedBase: 1000 },
             {
                 type: 'novel', bg: 'images/back.jpg', steps: [
                     { char: 'sonemi', text: "…終わった…❓️私の勝ち…よね❓️" },
@@ -405,8 +405,8 @@
 
             setTimeout(() => {
                 if (!enemy.hit && gameState === 'action') {
-                    takeDamage(10);
-                    score = Math.max(0, score - 50);
+                    takeDamage(5);
+                    score = Math.max(0, score - 30);
                     updateScoreDisplay();
                     enemiesLeft--;
                     document.getElementById('enemy-count').innerText = enemiesLeft;
@@ -571,11 +571,11 @@
 
             // スコアに応じてメッセージを変えるよ！
             let msg = "";
-            if (score >= 50000) {
+            if (score >= 15000) {
                 msg = "😤「あんた、プロのサンドバッグ職人ね！惚れ惚れするわ👊✨」";
-            } else if (score >= 30000) {
-                msg = "「ふん、まあまあね。少しはスッキリしたわ😤」";
             } else if (score >= 10000) {
+                msg = "「ふん、まあまあね。少しはスッキリしたわ😤」";
+            } else if (score >= 5000) {
                 msg = "😤「まだまだ修行が足りないわね！出直してきなさい！👊」";
             } else {
                 msg = "😤「ちょっと！全然当たってないじゃない！私のストレス倍増よ！💢」";
